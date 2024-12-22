@@ -1,0 +1,60 @@
+import { useEffect } from "react";
+
+const ContentPage = () => {
+  useEffect(() => {
+    const handleDOMContentLoaded = () => {
+      // Select all textarea elements
+      const textareas = document.querySelectorAll("textarea");
+      console.log(textareas.length);
+      console.log(`Number of textarea fields found: ${textareas.length}`);
+
+      textareas.forEach((textarea) => {
+        // Ensure no duplicate buttons are added
+        if (!textarea.parentElement?.querySelector(".autocorrect-button")) {
+          const button = document.createElement("button");
+          button.innerText = "Correct";
+          button.className = "autocorrect-button"; // Add a class for easier identification
+          button.style.position = "absolute";
+          button.style.bottom = "5px";
+          button.style.right = "5px";
+          button.style.backgroundColor = "blue";
+          button.style.color = "white";
+          button.style.border = "none";
+          button.style.padding = "5px 10px";
+          button.style.borderRadius = "5px";
+          button.style.cursor = "pointer";
+          button.style.zIndex = "9999";
+
+          // Ensure the parent element of the textarea has relative positioning
+          if (textarea.parentElement) {
+            textarea.parentElement.style.position = "relative";
+          }
+          textarea.style.border = "1px solid red";
+
+          // Append the button to the parent element
+          textarea.parentElement?.appendChild(button);
+
+          // Add an event listener for the button
+          button.addEventListener("click", () => {
+            alert(
+              `Correct button clicked for textarea with value: ${textarea.value}`
+            );
+          });
+        }
+      });
+    };
+
+    // Attach the DOMContentLoaded event listener
+    handleDOMContentLoaded();
+    window.addEventListener("DOMContentLoaded", handleDOMContentLoaded);
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener("DOMContentLoaded", handleDOMContentLoaded);
+    };
+  }, []);
+
+  return null; // The component doesn't render any visible UI itself
+};
+
+export default ContentPage;

@@ -1,0 +1,58 @@
+import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import ReactDOM from "react-dom";
+
+const ContentPage = () => {
+  const [textareaData, setTextareaData] = useState<
+    { id: string; textarea: HTMLTextAreaElement }[]
+  >([]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      const textareaElements = document.querySelectorAll("textarea");
+      const newTextareaData = Array.from(textareaElements).map((textarea) => {
+        const id = uuidv4();
+        textarea.setAttribute("data-id", id);
+        return { id, textarea };
+      });
+      setTextareaData(newTextareaData);
+    }, 1000);
+  }, []);
+
+  const handleButtonClick = (id: string) => {
+    const element = document.querySelector(
+      `[data-id="${id}"]`
+    ) as HTMLTextAreaElement;
+    if (element) {
+      element.value = "Hello";
+    }
+  };
+  console.log(`how to `);
+  return (
+    <div>
+      {textareaData.map(({ id, textarea }) => (
+        <div key={id} style={{ position: "relative" }}>
+          {ReactDOM.createPortal(
+            <button
+              onClick={() => handleButtonClick(id)}
+              style={{
+                position: "absolute",
+                right: "0",
+                bottom: "0",
+                backgroundColor: "red",
+                color: "white",
+                border: "none",
+                padding: "10px",
+              }}
+            >
+              Check
+            </button>,
+            textarea.parentElement! // Inject button into the parent of the textarea
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default ContentPage;
