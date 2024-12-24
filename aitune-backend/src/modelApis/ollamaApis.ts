@@ -1,11 +1,12 @@
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { ChatGenerationChunk } from "@langchain/core/outputs";
 import { ChatGroq } from "@langchain/groq";
 import { ChatOllama } from "@langchain/ollama";
 import { ChatOpenAI } from "@langchain/openai";
 
 const MODEL_NAME = "llama3.2";
 const model = new ChatGroq({
-  model: "llama-3.3-70b-versatile",
+  model: "llama-3.3-70b-specdec",
   apiKey: process.env.GROQ_API_KEY as string,
 });
 
@@ -29,20 +30,13 @@ Provide only the corrected text without explanations.`,
     });
   }
 
-  async correctGrammar(text: string) {
+  correctGrammar(text: string): AsyncGenerator<ChatGenerationChunk> {
     const humanMessage = new HumanMessage({
       content: text,
     });
 
     const messages = [this.systemMessage, humanMessage];
 
-    const response = await gpt.invoke(messages, {});
-
-    // console.log("Total tokens used:" , gpt. );
-    // for await (const chunk of response) {
-    //   process.stdout.write(chunk.text);
-    // }
-    console.log(response);
-    console.log("\n");
+    return this.llm._streamResponseChunks(messages, {});
   }
 }
